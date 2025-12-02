@@ -11,6 +11,7 @@ import { UsersService } from "./users.service";
 import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
 import { CurrentUser } from "../auth/decorators/current-user.decorator";
 import { PaginationDto } from "./dto/pagination.dto";
+import { PinoLogger } from "nestjs-pino";
 import { Roles } from "../auth/decorators/roles.decorator";
 import { RolesGuard } from "../auth/guards/roles.guard";
 
@@ -20,12 +21,15 @@ import { RolesGuard } from "../auth/guards/roles.guard";
 @Controller("users")
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+     private readonly logger: PinoLogger
+  ) {}
 
   @Get("me")
   @Roles("USER", "ADMIN")
   getMe(@CurrentUser() user: any) {
-    // console.log("Current User:", user);
+    // this.logger.info(`Fetching profile for user ID: ${user.userId}`);
     return this.usersService.getMe(user.userId);
   }
 
@@ -40,7 +44,7 @@ export class UsersController {
   @Get(":id/borrowed")
   @Roles("ADMIN")
   getBorrowedByUser(@Param("id", ParseIntPipe) id: number) {
- 
+//  this.logger.info(`Fetching borrowed books for user ID: ${id}`);
     return this.usersService.getBorrowedBooksByUser(id);
   }
 }
