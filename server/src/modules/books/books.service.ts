@@ -33,8 +33,9 @@ export class BooksService {
     }`;
     const cached = await this.redisService.get<any>(cacheKey);
     if (cached) {
+         this.logger.info(`Cache hit for key: `);
       return cached;
-      // this.logger.info(`Cache hit for key: ${cacheKey}`);
+   
     }
     const skip = (page - 1) * limit;
     const result = await this.booksRepository.list({
@@ -47,6 +48,8 @@ export class BooksService {
           : undefined,
       search: query.search,
     });
+    // this.logger.info(`Cache miss for key: ${cacheKey}`);
+    // this.logger.info(result);
     const response = {
       items: result.items,
       total: result.total,

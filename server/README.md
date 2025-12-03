@@ -79,10 +79,12 @@ npx prisma studio
 - The JWT access token payload contains `{ sub, email, role }`, and `RolesGuard` checks the `role` field:
   - `USER`:
     - Can access `/api/v1/users/me`
+    - Can view their own borrowed books: `/api/v1/users/:id/borrowed` (only when `:id` matches their own ID)
     - Can borrow/return books: `/api/v1/books/:id/borrow`, `/api/v1/books/:id/return`
   - `ADMIN`:
-    - Can do everything a `USER` can
-    - Can list users and see their borrowed books
+    - Can do everything a `USER` can (including borrowing/returning books)
+    - Can list users and see borrowed books for any user: `/api/v1/users`, `/api/v1/users/:id/borrowed`
+    - Can view all currently borrowed books with borrower details: `/api/v1/users/borrowed`
     - Can manage authors and books (create/update/delete, admin-only reads)
 
 ### JWT and Cookies
@@ -107,14 +109,15 @@ npx prisma studio
 - `POST /api/v1/auth/logout`
 - `GET /api/v1/users/me`
 - `GET /api/v1/users` (admin)
-- `GET /api/v1/users/:id/borrowed` (admin)
+- `GET /api/v1/users/borrowed` (admin - all currently borrowed books with users)
+- `GET /api/v1/users/:id/borrowed` (user/admin - user can only see their own)
 - `POST /api/v1/books` (admin)
 - `GET /api/v1/books`
 - `GET /api/v1/books/:id`
 - `PUT /api/v1/books/:id` (admin)
 - `DELETE /api/v1/books/:id` (admin)
-- `POST /api/v1/books/:id/borrow` (user)
-- `POST /api/v1/books/:id/return` (user)
+- `POST /api/v1/books/:id/borrow` (user/admin)
+- `POST /api/v1/books/:id/return` (user/admin)
 - `POST /api/v1/authors` (admin)
 - `GET /api/v1/authors`
 - `PUT /api/v1/authors/:id` (admin)

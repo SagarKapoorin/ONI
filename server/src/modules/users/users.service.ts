@@ -36,4 +36,8 @@ export class UsersService {
     }
     return this.usersRepository.findBorrowedBooksByUser(userId);
   }
+
+  async getAllBorrowedBooks() {
+    return this.usersRepository.findAllBorrowedBooks();
+  }
 }

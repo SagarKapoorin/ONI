@@ -74,12 +74,27 @@ export class BooksRepository {
     if (book.isBorrowed) {
       return "alreadyBorrowed";
     }
-    const borrowed = await this.prisma.borrowedBook.create({
-      data: {
-        userId,
-        bookId,
-      },
+
+    const existingBorrow = await this.prisma.borrowedBook.findUnique({
+      where: { bookId },
     });
+
+    const borrowed = existingBorrow
+      ? await this.prisma.borrowedBook.update({
+          where: { id: existingBorrow.id },
+          data: {
+            userId,
+            borrowedAt: new Date(),
+            returnedAt: null,
+          },
+        })
+      : await this.prisma.borrowedBook.create({
+          data: {
+            userId,
+            bookId,
+          },
+        });
+
     await this.prisma.book.update({
       where: { id: bookId },
       data: { isBorrowed: true },

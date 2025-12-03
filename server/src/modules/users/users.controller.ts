@@ -1,5 +1,6 @@
 import {
   Controller,
+  ForbiddenException,
   Get,
   Param,
   ParseIntPipe,
@@ -39,10 +40,24 @@ export class UsersController {
     return this.usersService.listUsers(page, limit);
   }
 
-  @Get(":id/borrowed")
+  @Get("borrowed")
   @Roles("ADMIN")
-  getBorrowedByUser(@Param("id", ParseIntPipe) id: number) {
-//  this.logger.info(`Fetching borrowed books for user ID: ${id}`);
+  getAllBorrowed() {
+    return this.usersService.getAllBorrowedBooks();
+  }
+
+  @Get(":id/borrowed")
+  @Roles("USER", "ADMIN")
+  getBorrowedByUser(
+    @Param("id", ParseIntPipe) id: number,
+    @CurrentUser() user: any,
+  ) {
+    if (user.role === "USER" && user.userId !== id) {
+      throw new ForbiddenException(
+        "You can only view your own borrowed books",
+      );
+    }
+    // this.logger.info(`Fetching borrowed books for user ID: ${id}`);
     return this.usersService.getBorrowedBooksByUser(id);
   }
 }
