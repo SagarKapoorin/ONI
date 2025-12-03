@@ -59,14 +59,14 @@ export class BooksController {
 
   @Post(":id/borrow")
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles("USER")
+  @Roles("USER", "ADMIN")
   borrow(@Param("id", ParseIntPipe) id: number, @CurrentUser() user: any) {
     return this.booksService.borrowBook(user.userId, id);
   }
 
   @Post(":id/return")
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles("USER")
+  @Roles("USER", "ADMIN")
   return(@Param("id", ParseIntPipe) id: number, @CurrentUser() user: any) {
     return this.booksService.returnBook(user.userId, id);
   }

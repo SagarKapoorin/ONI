@@ -1,5 +1,6 @@
 import {
   Controller,
+  ForbiddenException,
   Get,
   Param,
   ParseIntPipe,
@@ -11,7 +12,6 @@ import { UsersService } from "./users.service";
 import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
 import { CurrentUser } from "../auth/decorators/current-user.decorator";
 import { PaginationDto } from "./dto/pagination.dto";
-import { PinoLogger } from "nestjs-pino";
 import { Roles } from "../auth/decorators/roles.decorator";
 import { RolesGuard } from "../auth/guards/roles.guard";
 
@@ -22,8 +22,7 @@ import { RolesGuard } from "../auth/guards/roles.guard";
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class UsersController {
   constructor(
-    private readonly usersService: UsersService,
-     private readonly logger: PinoLogger
+    private readonly usersService: UsersService
   ) {}
 
   @Get("me")
@@ -41,10 +40,24 @@ export class UsersController {
     return this.usersService.listUsers(page, limit);
   }
 
-  @Get(":id/borrowed")
+  @Get("borrowed")
   @Roles("ADMIN")
-  getBorrowedByUser(@Param("id", ParseIntPipe) id: number) {
-//  this.logger.info(`Fetching borrowed books for user ID: ${id}`);
+  getAllBorrowed() {
+    return this.usersService.getAllBorrowedBooks();
+  }
+
+  @Get(":id/borrowed")
+  @Roles("USER", "ADMIN")
+  getBorrowedByUser(
+    @Param("id", ParseIntPipe) id: number,
+    @CurrentUser() user: any,
+  ) {
+    if (user.role === "USER" && user.userId !== id) {
+      throw new ForbiddenException(
+        "You can only view your own borrowed books",
+      );
+    }
+    // this.logger.info(`Fetching borrowed books for user ID: ${id}`);
     return this.usersService.getBorrowedBooksByUser(id);
   }
 }

@@ -79,11 +79,27 @@ npx prisma studio
 - The JWT access token payload contains `{ sub, email, role }`, and `RolesGuard` checks the `role` field:
   - `USER`:
     - Can access `/api/v1/users/me`
+    - Can view their own borrowed books: `/api/v1/users/:id/borrowed` (only when `:id` matches their own ID)
     - Can borrow/return books: `/api/v1/books/:id/borrow`, `/api/v1/books/:id/return`
   - `ADMIN`:
-    - Can do everything a `USER` can
-    - Can list users and see their borrowed books
+    - Can do everything a `USER` can (including borrowing/returning books)
+    - Can list users and see borrowed books for any user: `/api/v1/users`, `/api/v1/users/:id/borrowed`
+    - Can view all currently borrowed books with borrower details: `/api/v1/users/borrowed`
     - Can manage authors and books (create/update/delete, admin-only reads)
+
+### Borrowing & History
+
+- Borrow/return operations work against a `BorrowedBook` record linked to a `Book`:
+  - A borrow sets `BorrowedBook.borrowedAt` and `returnedAt = null`, and `Book.isBorrowed = true`.
+  - A return sets `BorrowedBook.returnedAt` to the current time and `Book.isBorrowed = false`.
+- `GET /api/v1/users/:id/borrowed` (user/admin):
+  - Returns the full borrow history for that user (both active and past).
+  - Each item includes the `BorrowedBook` fields (`borrowedAt`, `returnedAt`, etc.) and the related `book` with its `author`.
+  - The frontend should treat `returnedAt === null` as “currently borrowed” and `returnedAt !== null` as “returned in the past”.
+- `GET /api/v1/users/borrowed` (admin):
+  - Returns only currently borrowed books (internally filtered by `returnedAt = null`).
+  - Each item includes the borrower `user` and the related `book` with its `author`.
+- Because `BorrowedBook.bookId` is unique, borrowing the same book again after a return reuses and updates the existing `BorrowedBook` row instead of creating a new one.
 
 ### JWT and Cookies
 
@@ -107,14 +123,15 @@ npx prisma studio
 - `POST /api/v1/auth/logout`
 - `GET /api/v1/users/me`
 - `GET /api/v1/users` (admin)
-- `GET /api/v1/users/:id/borrowed` (admin)
+- `GET /api/v1/users/borrowed` (admin - all currently borrowed books with users)
+- `GET /api/v1/users/:id/borrowed` (user/admin - user can only see their own)
 - `POST /api/v1/books` (admin)
 - `GET /api/v1/books`
 - `GET /api/v1/books/:id`
 - `PUT /api/v1/books/:id` (admin)
 - `DELETE /api/v1/books/:id` (admin)
-- `POST /api/v1/books/:id/borrow` (user)
-- `POST /api/v1/books/:id/return` (user)
+- `POST /api/v1/books/:id/borrow` (user/admin)
+- `POST /api/v1/books/:id/return` (user/admin)
 - `POST /api/v1/authors` (admin)
 - `GET /api/v1/authors`
 - `PUT /api/v1/authors/:id` (admin)

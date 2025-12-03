@@ -54,4 +54,18 @@ export class UsersRepository {
       },
     });
   }
+
+  findAllBorrowedBooks() {
+    return this.prisma.borrowedBook.findMany({
+      where: { returnedAt: null },
+      include: {
+        user: true,
+        book: {
+          include: {
+            author: true,
+          },
+        },
+      },
+    });
+  }
 }

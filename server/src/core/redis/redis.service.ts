@@ -71,6 +71,7 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
       return null;
     }
     try {
+      this.logger.debug('value:', value);
       return JSON.parse(value) as T;
     } catch {
       // Fallback if value was stored as plain string

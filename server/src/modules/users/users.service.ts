@@ -1,11 +1,10 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { UsersRepository } from "./users.repository";
-import { PinoLogger } from "nestjs-pino";
 
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly usersRepository: UsersRepository, private readonly logger:PinoLogger) {}
+  constructor(private readonly usersRepository: UsersRepository) {}
 
   async getMe(userId: number) {
     const user = await this.usersRepository.findById(userId);
@@ -36,5 +35,9 @@ export class UsersService {
       throw new NotFoundException("User not found");
     }
     return this.usersRepository.findBorrowedBooksByUser(userId);
+  }
+
+  async getAllBorrowedBooks() {
+    return this.usersRepository.findAllBorrowedBooks();
   }
 }
