@@ -87,6 +87,20 @@ npx prisma studio
     - Can view all currently borrowed books with borrower details: `/api/v1/users/borrowed`
     - Can manage authors and books (create/update/delete, admin-only reads)
 
+### Borrowing & History
+
+- Borrow/return operations work against a `BorrowedBook` record linked to a `Book`:
+  - A borrow sets `BorrowedBook.borrowedAt` and `returnedAt = null`, and `Book.isBorrowed = true`.
+  - A return sets `BorrowedBook.returnedAt` to the current time and `Book.isBorrowed = false`.
+- `GET /api/v1/users/:id/borrowed` (user/admin):
+  - Returns the full borrow history for that user (both active and past).
+  - Each item includes the `BorrowedBook` fields (`borrowedAt`, `returnedAt`, etc.) and the related `book` with its `author`.
+  - The frontend should treat `returnedAt === null` as “currently borrowed” and `returnedAt !== null` as “returned in the past”.
+- `GET /api/v1/users/borrowed` (admin):
+  - Returns only currently borrowed books (internally filtered by `returnedAt = null`).
+  - Each item includes the borrower `user` and the related `book` with its `author`.
+- Because `BorrowedBook.bookId` is unique, borrowing the same book again after a return reuses and updates the existing `BorrowedBook` row instead of creating a new one.
+
 ### JWT and Cookies
 
 - Access token
