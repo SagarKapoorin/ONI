@@ -21,26 +21,30 @@ export const BookCard = ({
 }: BookCardProps) => {
   const { user } = useAuth();
   const isAdmin = user?.role === "ADMIN";
-  //console.log("Rendering BookCard for book:", book.title, "isAdmin:", isAdmin);
+
+  const statusLabel = book.isBorrowed ? "Borrowed" : "Available";
+  const statusClasses = book.isBorrowed
+    ? "bg-red-50 text-red-600 ring-1 ring-red-100"
+    : "bg-emerald-50 text-emerald-600 ring-1 ring-emerald-100";
+
   return (
-    <div className="flex flex-col justify-between rounded-lg border border-slate-200 p-4 shadow-sm">
+    <article className="flex flex-col justify-between rounded-2xl border border-slate-200 bg-white p-4 shadow-sm shadow-slate-200/80 transition hover:-translate-y-0.5 hover:border-sky-400 hover:shadow-md hover:shadow-sky-100">
       <div>
-        <h3 className="font-semibold text-slate-900">{book.title}</h3>
-        <p className="text-sm text-slate-600">by {book.author.name}</p>
-        <p className="mt-1 text-xs">
-          Status:{" "}
-          <span
-            className={
-              book.isBorrowed
-                ? "text-red-600 font-medium"
-                : "text-green-600 font-medium"
-            }
-          >
-            {book.isBorrowed ? "Borrowed" : "Available"}
-          </span>
+        <h3 className="line-clamp-2 text-sm font-semibold tracking-tight text-slate-900 sm:text-base">
+          {book.title}
+        </h3>
+        <p className="mt-1 text-xs font-medium text-slate-500 sm:text-sm">
+          by <span className="text-slate-800">{book.author.name}</span>
         </p>
+        <div className="mt-3 flex items-center justify-between">
+          <span
+            className={`inline-flex items-center rounded-full px-2.5 py-1 text-[0.7rem] font-semibold uppercase tracking-wide ${statusClasses}`}
+          >
+            {statusLabel}
+          </span>
+        </div>
       </div>
-      <div className="mt-3 flex flex-wrap gap-2">
+      <div className="mt-4 flex flex-wrap gap-2">
         {user && !book.isBorrowed && onBorrow && (
           <Button loading={isBorrowing} onClick={onBorrow}>
             Borrow
@@ -50,16 +54,22 @@ export const BookCard = ({
           <Button onClick={onReturn}>Return</Button>
         )}
         {isAdmin && onEdit && (
-          <Button onClick={onEdit} className="bg-slate-700 hover:bg-slate-800">
+          <Button
+            onClick={onEdit}
+            className="bg-slate-700 hover:bg-slate-800"
+          >
             Edit
           </Button>
         )}
         {isAdmin && onDelete && (
-          <Button onClick={onDelete} className="bg-red-600 hover:bg-red-700">
+          <Button
+            onClick={onDelete}
+            className="bg-red-600 hover:bg-red-700"
+          >
             Delete
           </Button>
         )}
       </div>
-    </div>
+    </article>
   );
 };

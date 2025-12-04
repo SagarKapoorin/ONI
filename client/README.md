@@ -118,6 +118,30 @@ client/
   vite.config.ts    # Vite configuration
 ```
 
+## Frontend best practices & optimizations
+
+- **API layer & caching**
+  - Centralized Axios instance with base URL, auth header, and interceptors in `src/api/axios.ts`.
+  - TanStack Query used for server state, automatic caching, refetching, and mutation flows (`useQuery`, `useMutation`).
+  - Query invalidation wired after admin actions (create/delete book, create author) to keep UI and backend in sync.
+
+- **Auth & security**
+  - JWT access token stored only in memory + localStorage helper, injected via Axios interceptor (no manual header wiring).
+  - Protected routes implemented with a `ProtectedRoute` wrapper and React context (`AuthContext`) for role-aware navigation.
+
+- **UI/UX & responsiveness**
+  - Fully responsive layout using Tailwind: mobile-first pages, sticky filter sidebar on larger screens, and adaptive grids.
+  - Reusable components (`Input`, `Button`, `BookCard`, `Skeleton`) for consistent styling and behavior.
+  - Clear status badges, pagination controls, and toasts for feedback on loading/error/success states.
+
+- **Forms & validation**
+  - React Hook Form + Zod schemas for typed, declarative validation on login/signup/admin forms.
+  - Field-level error messages and HTML `autoComplete` attributes for better UX and accessibility.
+
+- **TypeScript & code quality**
+  - Strict TypeScript configuration and shared types in `src/types` for safer API consumption.
+  - ESLint + Prettier wired via `npm run lint` and `npm run format(:check)` to keep the codebase consistent.
+
 ---
 
 Made by **Sagar Kapoor**  

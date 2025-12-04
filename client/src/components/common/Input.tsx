@@ -11,9 +11,9 @@ export const Input = ({ label, error, ...rest }: InputProps) => {
       <span className="font-medium text-slate-800">{label}</span>
       <input
         {...rest}
-        className="rounded border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+        className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500"
       />
-      {error && <span className="text-xs text-red-600">{error}</span>}
+      {error && <span className="text-xs text-red-500">{error}</span>}
     </label>
   );
 };
