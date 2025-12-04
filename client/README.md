@@ -94,6 +94,30 @@ Then open `http://localhost:8080` in your browser.
 
 > Note: `VITE_API_URL` is baked into the image at build time, so set it in `.env` before running `docker build`.
 
+## Folder structure
+
+At a high level, the client app is organized as follows:
+
+```text
+client/
+  public/           # Static assets served as‑is
+  src/
+    api/            # API clients and Axios instances
+    assets/         # Images, icons and static media
+    components/     # Reusable presentational components
+    context/        # React contexts (e.g. auth)
+    hooks/          # Reusable custom hooks
+    pages/          # Route-level page components
+    routes/         # Route configuration and layout
+    types/          # Shared TypeScript types
+    utils/          # Helpers and utility functions
+    App.tsx         # Root application component
+    main.tsx        # React entry point
+  Dockerfile        # Docker setup for production build
+  package.json      # Frontend dependencies and scripts
+  vite.config.ts    # Vite configuration
+```
+
 ---
 
 Made by **Sagar Kapoor**  
