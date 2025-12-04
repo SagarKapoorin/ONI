@@ -1,6 +1,10 @@
 ## ONI
 
-### Note: Docker file is separate for Backend and Frontend , Moreover using role based approach in backend.
+### Note: 
+1. Docker file is separate for Backend and Frontend.
+2. Moreover using role based approach in backend.
+3. I have use local postgreSQL.
+4. Please go through readme file especially for backend : for How to run migrations and seed data , How to get a token and test protected routes
 
 This repository contains the ONI project, split into separate backend and frontend applications.
 
