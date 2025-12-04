@@ -49,12 +49,18 @@ export const SignupPage = () => {
   };
 
   return (
-    <div className="flex min-h-[80vh] items-center justify-center px-4">
-      <div className="w-full max-w-md rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
-        <h1 className="mb-4 text-xl font-semibold text-slate-900">
+    <div className="flex min-h-[70vh] items-center justify-center">
+      <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white/95 p-6 shadow-md shadow-slate-200/80 backdrop-blur-sm">
+        <h1 className="mb-1 text-2xl font-semibold tracking-tight text-slate-900">
           Create an ONI Library account
         </h1>
-        <form className="flex flex-col gap-4" onSubmit={handleSubmit(onSubmit)}>
+        <p className="mb-5 text-sm text-slate-500">
+          Sign up in seconds and start borrowing instantly.
+        </p>
+        <form
+          className="flex flex-col gap-4"
+          onSubmit={handleSubmit(onSubmit)}
+        >
           <Input
             label="Name"
             type="text"

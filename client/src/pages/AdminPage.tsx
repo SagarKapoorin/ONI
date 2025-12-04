@@ -40,7 +40,6 @@ export const AdminPage = () => {
 
   const authorMutation = useMutation({
     mutationFn: (values: AuthorFormValues) =>
-      // console.log("Creating author with values:", values)
       authorsApi.create({ name: values.name }),
     onSuccess: () => {
       toast.success("Author created");
@@ -59,7 +58,6 @@ export const AdminPage = () => {
         authorId: Number(values.authorId),
       }),
     onSuccess: () => {
-      //console.log("Book created successfully");
       toast.success("Book created");
       queryClient.invalidateQueries({ queryKey: ["books"] });
       queryClient.invalidateQueries({ queryKey: ["books", "admin"] });
@@ -89,7 +87,6 @@ export const AdminPage = () => {
     formState: { errors: authorErrors, isSubmitting: isAuthorSubmitting },
     reset: resetAuthor,
   } = useForm<AuthorFormValues>({
-    //console.log("Author form rendered",registerAuthor,handleSubmitAuthor);
     resolver: zodResolver(authorSchema),
   });
 
@@ -109,16 +106,22 @@ export const AdminPage = () => {
 
   const onSubmitBook = async (values: BookFormValues) => {
     await bookMutation.mutateAsync(values);
-    //console.log("Book form submitted with values:", values);
     resetBook();
   };
 
   return (
-    <div className="mx-auto max-w-6xl space-y-6 p-4">
-      <h1 className="text-xl font-semibold text-slate-900">Admin panel</h1>
+    <div className="mx-auto max-w-6xl space-y-6">
+      <header>
+        <h1 className="text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">
+          Admin panel
+        </h1>
+        <p className="mt-1 text-sm text-slate-500">
+          Manage authors, books and monitor all currently borrowed items.
+        </p>
+      </header>
 
       <section className="grid gap-4 md:grid-cols-2">
-        <div className="rounded border border-slate-200 bg-white p-4">
+        <div className="rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-sm shadow-slate-200/80 sm:p-5">
           <h2 className="mb-3 text-base font-semibold text-slate-900">
             Add author
           </h2>
@@ -137,7 +140,7 @@ export const AdminPage = () => {
           </form>
         </div>
 
-        <div className="rounded border border-slate-200 bg-white p-4">
+        <div className="rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-sm shadow-slate-200/80 sm:p-5">
           <h2 className="mb-3 text-base font-semibold text-slate-900">
             Add book
           </h2>
@@ -153,7 +156,7 @@ export const AdminPage = () => {
             <label className="flex flex-col gap-1 text-sm">
               <span className="font-medium text-slate-800">Author</span>
               <select
-                className="rounded border border-slate-300 px-3 py-2 text-sm"
+                className="rounded-lg border border-slate-300 bg-slate-50 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-sky-500"
                 {...registerBook("authorId")}
               >
                 <option value="">Select author</option>
@@ -164,7 +167,7 @@ export const AdminPage = () => {
                 ))}
               </select>
               {bookErrors.authorId && (
-                <span className="text-xs text-red-600">
+                <span className="text-xs text-red-500">
                   {bookErrors.authorId.message}
                 </span>
               )}
@@ -198,7 +201,7 @@ export const AdminPage = () => {
           Currently borrowed books
         </h2>
         {!borrowed || borrowed.length === 0 ? (
-          <p className="text-sm text-slate-600">
+          <p className="text-sm text-slate-500">
             No books are currently borrowed.
           </p>
         ) : (
@@ -206,13 +209,21 @@ export const AdminPage = () => {
             {borrowed.map((item) => (
               <div
                 key={item.id}
-                className="flex items-center justify-between rounded border border-slate-200 bg-white p-3 text-sm"
+                className="flex flex-col items-start justify-between gap-3 rounded-2xl border border-slate-200 bg-white/95 p-3 text-sm shadow-sm shadow-slate-200/80 sm:flex-row sm:items-center"
               >
                 <div>
-                  <p className="font-medium">{item.book.title}</p>
-                  <p className="text-slate-600">
-                    by {item.book.author.name} — Borrowed by {item.user.name} (
-                    {item.user.email})
+                  <p className="font-medium text-slate-900">
+                    {item.book.title}
+                  </p>
+                  <p className="text-xs text-slate-500 sm:text-sm">
+                    by{" "}
+                    <span className="text-slate-800">
+                      {item.book.author.name}
+                    </span>{" "}
+                    · Borrowed by{" "}
+                    <span className="text-slate-800">
+                      {item.user.name} ({item.user.email})
+                    </span>
                   </p>
                 </div>
               </div>
