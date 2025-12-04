@@ -25,7 +25,7 @@ For an overview of the whole project, see the main `README.md` in the repository
 
 - **Books dashboard**
   - Paginated books list with:
-    - Search by title.
+    - Search by title with debouncing.
     - Filter by author.
     - Filter by status (All / Available / Borrowed).
   - Borrow books (both `USER` and `ADMIN` roles).
