@@ -1,6 +1,5 @@
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate, Navigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { Input } from "../components/common/Input";
@@ -24,19 +23,40 @@ export const SignupPage = () => {
   const {
     register,
     handleSubmit,
+    setError,
     formState: { errors, isSubmitting },
-  } = useForm<SignupFormValues>({
-    resolver: zodResolver(signupSchema),
-  });
+  } = useForm<SignupFormValues>();
 
   if (user) {
     return <Navigate to="/dashboard" replace />;
   }
 
   const onSubmit = async (values: SignupFormValues) => {
+    const result = signupSchema.safeParse(values);
+    if (!result.success) {
+      for (const issue of result.error.issues) {
+        const field = issue.path[0];
+        if (typeof field === "string") {
+          setError(field as keyof SignupFormValues, {
+            type: "manual",
+            message: issue.message,
+          });
+        }
+      }
+
+      const firstIssue = result.error.issues[0];
+      toast.error(
+        firstIssue?.message || "Please fix the highlighted form fields.",
+      );
+      return;
+    }
+
     try {
-      await signup(values.name, values.email, values.password);
-      // console.log("Signup successful");
+      await signup(
+        result.data.name,
+        result.data.email,
+        result.data.password,
+      );
       toast.success("Account created successfully");
       navigate("/dashboard");
     } catch (error) {

@@ -1,6 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "react-toastify";
 import { booksApi } from "../api/booksApi";
 import type { BooksQueryParams, Book, PaginatedResponse } from "../types";
+import { extractApiErrorMessage } from "../utils/apiError";
 
 const booksListKey = (params: BooksQueryParams) => ["books", "list", params];
 
@@ -31,12 +33,14 @@ export const useBorrowBook = () => {
       });
       return { previous };
     },
-    onError: (_err, _variables, context) => {
+    onError: (error, _variables, context) => {
       if (!context) return;
       context.previous.forEach(([key, data]) => {
         if (!data) return;
         queryClient.setQueryData(key, data);
       });
+      const message = extractApiErrorMessage(error, "Failed to borrow book");
+      toast.error(message);
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["books"] });
