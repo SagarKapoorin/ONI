@@ -30,9 +30,15 @@ export class BooksRepository {
     });
   }
 
-  delete(id: number) {
-    return this.prisma.book.delete({
-      where: { id },
+  async delete(id: number) {
+    return this.prisma.$transaction(async (tx) => {
+      await tx.borrowedBook.deleteMany({
+        where: { bookId: id },
+      });
+
+      return tx.book.delete({
+        where: { id },
+      });
     });
   }
 

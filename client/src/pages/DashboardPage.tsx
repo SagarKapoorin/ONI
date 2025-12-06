@@ -6,8 +6,6 @@ import { Skeleton } from "../components/common/Skeleton";
 import { authorsApi } from "../api/authorsApi";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "react-toastify";
-import { extractApiErrorMessage } from "../utils/apiError";
-
 const PAGE_SIZE = 10;
 
 export const DashboardPage = () => {
@@ -124,16 +122,8 @@ export const DashboardPage = () => {
                       book.isBorrowed
                         ? undefined
                         : async () => {
-                            try {
-                              await borrowMutation.mutateAsync(book.id);
-                              toast.success("Book borrowed");
-                            } catch (error) {
-                              const message = extractApiErrorMessage(
-                                error,
-                                "Failed to borrow book",
-                              );
-                              toast.error(message);
-                            }
+                            await borrowMutation.mutateAsync(book.id);
+                            toast.success("Book borrowed");
                           }
                     }
                   />

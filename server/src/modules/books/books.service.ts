@@ -91,6 +91,11 @@ export class BooksService {
     if (!book) {
       throw new NotFoundException("Book not found");
     }
+    if (book.isBorrowed) {
+      throw new ConflictException(
+        "Book is currently borrowed and cannot be deleted",
+      );
+    }
     await this.booksRepository.delete(id);
     await this.redisService.del(`books:detail:${id}`);
     await this.redisService.resetPrefix("books:list");
